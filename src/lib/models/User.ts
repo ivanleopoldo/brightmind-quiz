@@ -4,8 +4,9 @@ const { Schema, model } = mongoose;
 
 const UserSchema = new Schema(
   {
-    username: String,
-    age: Number,
+    accountId: { type: String, required: true, unique: true },
+    email: { type: String },
+    quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
   },
   {
     timestamps: true,

@@ -10,25 +10,16 @@ import React from "react";
 import { authClient } from "@/lib/auth-client";
 import { api } from "@/trpc/react";
 const { useSession } = authClient;
+import { redirect } from "next/navigation";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
   const { data: session } = useSession();
   const id = session?.user.id;
 
-  const utils = api.useUtils();
-
   const { data, isLoading } = api.quiz.getById.useQuery(id!, {
     enabled: !!id,
-  });
-
-  const { mutate: addQuiz } = api.quiz.addQuiz.useMutation({
-    onSuccess: () => {
-      utils.quiz.getById.invalidate(id);
-    },
-    onError: (error) => {
-      console.error("Error adding quiz:", error);
-    },
+    staleTime: 1000 * 60 * 5,
   });
 
   const tutorials = [
@@ -51,23 +42,8 @@ export default function Dashboard() {
     />,
   ];
 
-  const handleAddQuiz = async () => {
-    if (id) {
-      const title = prompt("Enter quiz title:");
-      if (title) {
-        try {
-          addQuiz({ userId: id, title });
-        } catch (error) {
-          console.error("Error adding quiz:", error);
-        }
-      } else {
-        console.error("Quiz title is required");
-      }
-    }
-  };
-
   return (
-    <div className="flex w-full flex-col gap-2 overflow-hidden">
+    <div className="flex w-full flex-col gap-2 overflow-hidden px-4">
       <div className="flex w-full flex-col gap-4 pb-4 pt-8 sm:px-8 sm:pt-8">
         <div className="flex flex-col items-center justify-center align-middle md:items-start md:justify-start">
           <h1 className="text-2xl font-bold md:text-5xl">
@@ -99,7 +75,7 @@ export default function Dashboard() {
             variant={"ghost"}
             className="mr-1 size-8"
             size="icon"
-            onClick={handleAddQuiz}
+            onClick={() => redirect("/quiz-creator")}
           >
             <Plus strokeWidth={1.2} className="text-foreground" />
           </Button>
@@ -115,9 +91,7 @@ export default function Dashboard() {
                   // @ts-ignore
                   return <QuizCard key={index} data={item} />;
                 })}
-              <Button onClick={handleAddQuiz} asChild>
-                <CreateNewCard />
-              </Button>
+              <CreateNewCard />
             </>
           )}
         </div>

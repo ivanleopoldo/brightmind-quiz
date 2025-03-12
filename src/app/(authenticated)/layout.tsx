@@ -43,7 +43,7 @@ export default async function ProtectedLayout({ children }: PropsWithChildren) {
           </div>
         </header>
         <Separator />
-        <div className="relative min-h-[calc(100vh-6rem)] overflow-y-auto px-4">
+        <div className="relative min-h-[calc(100vh-5.5rem)] overflow-y-auto">
           {children}
         </div>
       </SidebarInset>

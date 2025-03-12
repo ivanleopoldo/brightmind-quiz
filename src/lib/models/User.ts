@@ -4,15 +4,15 @@ const { Schema, model } = mongoose;
 
 const UserSchema = new Schema(
   {
-    accountId: { type: String, required: true, unique: true },
-    email: { type: String },
-    quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
+    name: { type: String, immutable: true },
+    emailVerified: { type: Boolean, immutable: true },
+    email: { type: String, immutable: true },
   },
   {
     timestamps: true,
   },
 );
 
-const User = model("User", UserSchema, "users");
+const User = model("User", UserSchema, "user");
 
 export default User;

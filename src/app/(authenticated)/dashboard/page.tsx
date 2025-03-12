@@ -1,5 +1,4 @@
 "use client";
-
 import CreateNewCard from "@/components/create-new-card";
 import QuizCard from "@/components/quiz-card";
 import TutorialCard from "@/components/tutorial-card";
@@ -8,9 +7,30 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ChevronsRight, ClipboardPenLine, FilePlus2, Plus } from "lucide-react";
 import React from "react";
+import { authClient } from "@/lib/auth-client";
+import { api } from "@/trpc/react";
+const { useSession } = authClient;
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
+  const { data: session } = useSession();
+  const id = session?.user.id;
+
+  const utils = api.useUtils();
+
+  const { data, isLoading } = api.quiz.getById.useQuery(id, {
+    enabled: !!id,
+  });
+
+  const { mutate: addQuiz } = api.quiz.addQuiz.useMutation({
+    onSuccess: () => {
+      utils.quiz.getById.invalidate(id);
+    },
+    onError: (error) => {
+      console.error("Error adding quiz:", error);
+    },
+  });
+
   const tutorials = [
     <TutorialCard
       title="Try the Experience"
@@ -30,6 +50,22 @@ export default function Dashboard() {
       button={<Button>HOST A QUIZ</Button>}
     />,
   ];
+
+  const handleAddQuiz = async () => {
+    if (id) {
+      const title = prompt("Enter quiz title:");
+      if (title) {
+        try {
+          addQuiz({ userId: id, title });
+        } catch (error) {
+          console.error("Error adding quiz:", error);
+        }
+      } else {
+        console.error("Quiz title is required");
+      }
+    }
+  };
+
   return (
     <div className="flex w-full flex-col gap-2 overflow-hidden">
       <div className="flex w-full flex-col gap-4 pb-4 pt-8 sm:px-8 sm:pt-8">
@@ -59,16 +95,29 @@ export default function Dashboard() {
       <div className="flex h-full flex-col gap-4 p-4">
         <div className="flex w-full flex-row items-end justify-between">
           <h1 className="text-4xl font-bold">Recent quizzes</h1>
-          <Button variant={"ghost"} className="mr-1 size-8" size="icon" asChild>
+          <Button
+            variant={"ghost"}
+            className="mr-1 size-8"
+            size="icon"
+            onClick={handleAddQuiz}
+          >
             <Plus strokeWidth={1.2} className="text-foreground" />
           </Button>
         </div>
         <div className="grid h-full w-full grid-flow-row-dense grid-cols-1 gap-2 sm:grid-cols-3">
-          <QuizCard />
-          <QuizCard />
-          <QuizCard />
-          <QuizCard />
-          <CreateNewCard />
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              {data &&
+                data.map((item, index) => {
+                  return <QuizCard key={index} props={item} />;
+                })}
+              <Button onClick={handleAddQuiz} asChild>
+                <CreateNewCard />
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

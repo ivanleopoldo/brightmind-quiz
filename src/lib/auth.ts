@@ -11,4 +11,10 @@ export const auth = betterAuth({
     modelName: "User",
     collectionName: "user",
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
 });

@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import { Card } from "./ui/card";
+import { PropsWithoutRef } from "react";
 
 export default function CreateNewCard() {
   return (

@@ -16,12 +16,12 @@ const QuizSchema = new Schema(
     duration: { type: Number, default: 0 },
     questions: [
       {
-        title: { type: String },
+        title: { type: String, required: true },
         points: { type: Number, default: 1 },
         duration: { type: Number, default: 0 },
         choices: [
           {
-            title: { type: String },
+            title: { type: String, required: true },
             isAnswer: { type: Boolean },
           },
         ],

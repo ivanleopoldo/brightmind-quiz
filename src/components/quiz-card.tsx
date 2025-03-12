@@ -10,6 +10,7 @@ import {
 import { Separator } from "./ui/separator";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { TQuiz } from "@/lib/types";
 
 type SmallTextProps = {
   className?: string;
@@ -23,7 +24,7 @@ function SmallText({ className, children }: SmallTextProps) {
   );
 }
 
-export default function QuizCard() {
+export default function QuizCard({ props }: { props: TQuiz }) {
   return (
     <Card className="h-72 flex-wrap overflow-hidden border-2 border-primary/20 pb-6 shadow-none">
       <CardHeader className="relative h-3/5 w-full p-0">
@@ -32,14 +33,14 @@ export default function QuizCard() {
       <Separator className="mb-4 border border-primary/20 shadow-none" />
       <CardContent className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg">Math Quiz 2</CardTitle>
-          <CardDescription>Math Quiz</CardDescription>
+          <CardTitle className="text-lg">{props.title}</CardTitle>
+          <CardDescription>{props.description}</CardDescription>
         </div>
       </CardContent>
       <CardFooter className="flex flex-row items-center gap-4">
-        <SmallText>50 questions</SmallText>
+        <SmallText>{props.questions ? props.questions.length : 0} questions</SmallText>
         <SmallText className="text-2xl">•</SmallText>
-        <SmallText>50 points</SmallText>
+        <SmallText>{props.overall_points?.toString()} points</SmallText>
       </CardFooter>
     </Card>
   );

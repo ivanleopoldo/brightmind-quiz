@@ -1,29 +1,33 @@
 "use client";
-
 import AuthForm from "@/components/auth-form";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 
-export default function Login() {
-  const login = async ({
+export default function Signup() {
+  const signUp = async ({
     email,
     password,
   }: {
     email: string;
     password: string;
   }) => {
-    await authClient.signIn.email(
+    await authClient.signUp.email(
       {
-        email,
-        password,
+        email: email,
+        name: email,
+        password: password,
       },
       {
+        onError: (err) => {
+          console.error(err);
+        },
         onSuccess: () => {
-          console.log("Logged in");
+          console.log("account created");
           redirect("/dashboard");
         },
       },
     );
+    ({ email, name: email, password });
   };
 
   return (
@@ -48,12 +52,13 @@ export default function Login() {
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <AuthForm
+              variant="signup"
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.target as HTMLFormElement;
                 const email = form.elements[0] as HTMLInputElement;
                 const password = form.elements[1] as HTMLInputElement;
-                login({ email: email.value, password: password.value });
+                signUp({ email: email.value, password: password.value });
               }}
             />
           </div>

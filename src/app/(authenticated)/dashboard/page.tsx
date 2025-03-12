@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   const utils = api.useUtils();
 
-  const { data, isLoading } = api.quiz.getById.useQuery(id, {
+  const { data, isLoading } = api.quiz.getById.useQuery(id!, {
     enabled: !!id,
   });
 
@@ -111,7 +111,9 @@ export default function Dashboard() {
             <>
               {data &&
                 data.map((item, index) => {
-                  return <QuizCard key={index} props={item} />;
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  return <QuizCard key={index} data={item} />;
                 })}
               <Button onClick={handleAddQuiz} asChild>
                 <CreateNewCard />

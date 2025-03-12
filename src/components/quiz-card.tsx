@@ -24,7 +24,7 @@ function SmallText({ className, children }: SmallTextProps) {
   );
 }
 
-export default function QuizCard({ props }: { props: TQuiz }) {
+export default function QuizCard({ data }: { data: TQuiz }) {
   return (
     <Card className="h-72 flex-wrap overflow-hidden border-2 border-primary/20 pb-6 shadow-none">
       <CardHeader className="relative h-3/5 w-full p-0">
@@ -33,14 +33,16 @@ export default function QuizCard({ props }: { props: TQuiz }) {
       <Separator className="mb-4 border border-primary/20 shadow-none" />
       <CardContent className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg">{props.title}</CardTitle>
-          <CardDescription>{props.description}</CardDescription>
+          <CardTitle className="text-lg">{data.title}</CardTitle>
+          <CardDescription>{data.description}</CardDescription>
         </div>
       </CardContent>
       <CardFooter className="flex flex-row items-center gap-4">
-        <SmallText>{props.questions ? props.questions.length : 0} questions</SmallText>
+        <SmallText>
+          {data.questions ? data.questions.length : 0} questions
+        </SmallText>
         <SmallText className="text-2xl">•</SmallText>
-        <SmallText>{props.overall_points?.toString()} points</SmallText>
+        <SmallText>{data.overall_points?.toString()} points</SmallText>
       </CardFooter>
     </Card>
   );

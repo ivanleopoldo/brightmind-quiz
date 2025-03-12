@@ -1,4 +1,6 @@
 # TODO
 
-- [ ] Connect to MongoDB database
-- [ ] Create Authentication
+- [ ] Quiz Creator
+- [ ] Quiz Edit
+- [ ] Leaderboard After publishing quiz
+- [ ] Participant answer page

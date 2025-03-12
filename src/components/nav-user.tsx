@@ -103,7 +103,7 @@ export function NavUser({
             <DropdownMenuItem
               onClick={() => {
                 authClient.signOut();
-                redirect("/login");
+                redirect("/");
               }}
             >
               <LogOut />

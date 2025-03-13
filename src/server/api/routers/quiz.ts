@@ -103,4 +103,7 @@ export const quizRouter = createTRPCRouter({
         },
       );
     }),
+  deleteQuiz: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+    const result = await Quiz.deleteOne({ _id: input });
+  }),
 });

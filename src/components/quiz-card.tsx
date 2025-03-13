@@ -24,9 +24,15 @@ function SmallText({ className, children }: SmallTextProps) {
   );
 }
 
-export default function QuizCard({ data }: { data: TQuiz }) {
+export default function QuizCard({
+  data,
+  ...props
+}: { data: TQuiz } & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <Card className="h-72 flex-wrap overflow-hidden border-2 border-primary/20 pb-6 shadow-none">
+    <Card
+      {...props}
+      className="h-72 flex-wrap overflow-hidden border-2 border-primary/20 pb-6 shadow-none"
+    >
       <CardHeader className="relative h-3/5 w-full p-0">
         <Image src={"https://picsum.photos/1000/600"} alt="photo" fill />
       </CardHeader>
@@ -42,7 +48,9 @@ export default function QuizCard({ data }: { data: TQuiz }) {
           {data.questions ? data.questions.length : 0} questions
         </SmallText>
         <SmallText className="text-2xl">•</SmallText>
-        <SmallText>{data.overall_points?.toString()} points</SmallText>
+        <SmallText>
+          {data.questions.reduce((sum, q) => sum + (q.points || 0), 0)} points
+        </SmallText>
       </CardFooter>
     </Card>
   );

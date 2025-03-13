@@ -32,13 +32,19 @@ export default function Dashboard() {
       title="Create your own"
       description="in less than 5 minutes"
       icon={FilePlus2}
-      button={<Button variant={"secondary"}>CREATE A QUIZ</Button>}
+      button={
+        <Button onClick={() => redirect("/quiz-creator")} variant={"secondary"}>
+          CREATE A QUIZ
+        </Button>
+      }
     />,
     <TutorialCard
       title="Host your quiz"
       icon={ClipboardPenLine}
       description="and share it with your friends!"
-      button={<Button>HOST A QUIZ</Button>}
+      button={
+        <Button onClick={() => redirect("/quiz-creator")}>HOST A QUIZ</Button>
+      }
     />,
   ];
 
@@ -87,9 +93,19 @@ export default function Dashboard() {
             <>
               {data &&
                 data.map((item, index) => {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  return <QuizCard key={index} data={item} />;
+                  {
+                    /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+                  }
+                  {
+                    /* @ts-ignore */
+                  }
+                  return (
+                    <QuizCard
+                      onClick={() => redirect(`/quiz-creator/${item._id}`)}
+                      key={index}
+                      data={item}
+                    />
+                  );
                 })}
               <CreateNewCard />
             </>

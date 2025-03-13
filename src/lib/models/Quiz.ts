@@ -41,26 +41,10 @@ const QuizSchema = new Schema(
         {
           title: "What is my name?",
           description: "This is a sample question.",
-          points: 1,
-          duration: 2,
-          choices: [
-            { title: "Choice 1", isAnswer: false },
-            { title: "Choice 2", isAnswer: true },
-            { title: "Choice 3", isAnswer: false },
-            { title: "Choice 4", isAnswer: false },
-          ],
         },
         {
           title: "Who is yellow?",
           description: "This is a sample question.",
-          points: 1,
-          duration: 2,
-          choices: [
-            { title: "Choice 1", isAnswer: false },
-            { title: "Choice 2", isAnswer: false },
-            { title: "Choice 3", isAnswer: true },
-            { title: "Choice 4", isAnswer: false },
-          ],
         },
       ],
     },
@@ -69,6 +53,14 @@ const QuizSchema = new Schema(
     timestamps: true,
   },
 );
+
+QuizSchema.pre("save", function (next) {
+  this.overall_points = this.questions.reduce(
+    (sum, question) => sum + (question.points || 0),
+    0,
+  );
+  next();
+});
 
 const Quiz = model("Quiz", QuizSchema, "quizzes");
 

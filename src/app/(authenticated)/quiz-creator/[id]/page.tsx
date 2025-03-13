@@ -32,6 +32,10 @@ interface Question {
 export default function Quiz() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = api.quiz.getOne.useQuery(id!);
+  const { data: isPublished, refetch } = api.published.getById.useQuery(id!, {
+    refetchOnWindowFocus: false,
+  });
+  console.log(isPublished);
   const utils = api.useUtils();
   const { mutate: updateQuestion } = api.quiz.updateQuestion.useMutation();
   const { mutate: addQuestion } = api.quiz.addQuestion.useMutation({
@@ -39,12 +43,23 @@ export default function Quiz() {
       utils.quiz.getOne.invalidate(id);
     },
   });
+  const { mutate: publishQuiz } = api.published.publishQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.publishQuiz.invalidate(id);
+      refetch();
+    },
+  });
+  const { mutate: unpublishQuiz } = api.published.unpublishQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.unpublishQuiz.invalidate(id);
+      refetch();
+    },
+  });
   const { mutate: deleteQuestion } = api.quiz.deleteQuestion.useMutation({
     onSuccess: () => {
       utils.quiz.getOne.invalidate(id);
     },
   });
-  console.log(data);
 
   const [selected, setSelected] = useState(0);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -156,6 +171,8 @@ export default function Quiz() {
       },
     );
   };
+
+  const handlePublish = () => {};
 
   if (isLoading || questions.length === 0) {
     return <div>Loading...</div>;
@@ -403,7 +420,11 @@ export default function Quiz() {
         </TabsContent>
         <TabsContent className="m-4" value="project">
           <div className="">
-            <Button>Publish</Button>
+            {!isPublished ? (
+              <Button onClick={() => publishQuiz(id)}>Publish</Button>
+            ) : (
+              <Button onClick={() => unpublishQuiz(id)}>Unpublish</Button>
+            )}
           </div>
         </TabsContent>
       </Tabs>

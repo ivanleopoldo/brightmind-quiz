@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export default function Page() {
   const [joinCode, setJoinCode] = React.useState("");
   const [input, setInput] = React.useState("");
-  const { data } = api.quiz.getByQuizId.useQuery(joinCode, {
+  const { data } = api.published.getById.useQuery(joinCode, {
     enabled: !!joinCode,
   });
 

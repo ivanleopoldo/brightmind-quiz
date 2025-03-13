@@ -29,7 +29,6 @@ interface Player {
 export default function QuizLobby() {
   const { id } = useParams();
   const userId = sessionStorage.getItem("user");
-  const router = useRouter();
   const [players, setPlayers] = useState<Player[]>([]);
   const [username, setUsername] = useState("");
   const [isJoined, setIsJoined] = useState(false);
@@ -112,7 +111,7 @@ export default function QuizLobby() {
               <Users className="mr-1 h-4 w-4" />
               {players.length} Players
             </Badge>
-            <CardTitle className="text-2xl font-bold">Quiz Lobby</CardTitle>
+            <CardTitle className="text-2xl font-bold">Lobby</CardTitle>
             <Badge variant="secondary" className="px-3 py-1">
               {id}
             </Badge>

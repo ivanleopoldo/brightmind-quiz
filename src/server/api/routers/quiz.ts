@@ -113,39 +113,4 @@ export const quizRouter = createTRPCRouter({
   deleteQuiz: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     const result = await Quiz.deleteOne({ _id: input });
   }),
-  addParticipant: publicProcedure
-    .input(
-      z.object({
-        quizId: z.string(),
-        username: z.string(),
-        score: z.number().optional(),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const result = await Quiz.findOneAndUpdate(
-        {
-          _id: input.quizId,
-        },
-        {
-          $push: {
-            participants: {
-              username: input.username,
-              score: input.score,
-            },
-          },
-        },
-        {
-          new: true,
-          projection: { participants: { $slice: -1 } },
-        },
-      ).lean();
-
-      if (!result) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-        });
-      }
-
-      return result?.participants[0];
-    }),
 });

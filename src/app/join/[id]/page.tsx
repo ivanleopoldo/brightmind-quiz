@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,16 +17,16 @@ export default function Page() {
     Math.random().toString(36).substring(7),
   );
 
-  // if (id) {
-  //   const { data } = api.quiz.getById.useQuery(id as string);
-  //   if (!data) {
-  //     toast.error("Invalid Code!");
-  //     redirect("/join");
-  //   }
-  // }
-  //
+  if (id) {
+    const { data } = api.published.getById.useQuery(id as string);
+    if (!data) {
+      toast.error("Invalid Code!");
+      redirect("/join");
+    }
+  }
 
-  const { mutateAsync: addParticipant } = api.quiz.addParticipant.useMutation();
+  const { mutateAsync: addParticipant } =
+    api.published.addParticipant.useMutation();
   const router = useRouter();
 
   // Function to randomize avatar
@@ -107,9 +107,15 @@ export default function Page() {
                         const user = await addParticipant({
                           quizId: id.toString(),
                           username: username,
+                          avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=d1d4f9,ffdfbf,ffd5dc,b6e3f4,c0aede`,
                         });
                         if (user) {
-                          sessionStorage.setItem("user", user?._id.toString());
+                          sessionStorage.setItem(
+                            "user",
+                            JSON.stringify({
+                              ...user,
+                            }),
+                          );
                           router.push(`/join/${id}/lobby`);
                         }
                       }

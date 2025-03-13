@@ -2,6 +2,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import Quiz from "@/lib/models/Quiz";
 import mongoose from "mongoose";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const quizRouter = createTRPCRouter({
   getAll: publicProcedure.query(async () => {
@@ -13,6 +14,12 @@ export const quizRouter = createTRPCRouter({
       userId: new mongoose.Types.ObjectId(input),
     }).sort({ updatedAt: -1 });
     return quizzes;
+  }),
+  getByQuizId: publicProcedure.input(z.string()).query(async ({ input }) => {
+    const result = await Quiz.findOne({
+      _id: input,
+    }).lean();
+    return result;
   }),
   addQuiz: publicProcedure
     .input(
@@ -106,4 +113,39 @@ export const quizRouter = createTRPCRouter({
   deleteQuiz: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     const result = await Quiz.deleteOne({ _id: input });
   }),
+  addParticipant: publicProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+        username: z.string(),
+        score: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const result = await Quiz.findOneAndUpdate(
+        {
+          _id: input.quizId,
+        },
+        {
+          $push: {
+            participants: {
+              username: input.username,
+              score: input.score,
+            },
+          },
+        },
+        {
+          new: true,
+          projection: { participants: { $slice: -1 } },
+        },
+      ).lean();
+
+      if (!result) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+      }
+
+      return result?.participants[0];
+    }),
 });

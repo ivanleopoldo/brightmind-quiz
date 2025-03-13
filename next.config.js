@@ -7,10 +7,15 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
       },
     ],
   },

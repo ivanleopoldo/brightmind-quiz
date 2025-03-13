@@ -14,6 +14,15 @@ const QuizSchema = new Schema(
     published: { type: Boolean, default: false },
     overall_points: { type: Number, default: 0 },
     duration: { type: Number, default: 0 },
+    hasStarted: { type: Boolean, default: false },
+    participants: {
+      type: [
+        {
+          username: { type: String, required: true },
+          score: { type: Number, default: 0 },
+        },
+      ],
+    },
     questions: {
       type: [
         {

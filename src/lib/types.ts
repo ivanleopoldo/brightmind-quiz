@@ -18,5 +18,12 @@ export type TQuiz = {
   description?: string | null;
   published?: boolean;
   overall_points?: number;
+  duration?: number;
   questions: TQuestion[];
+};
+
+export type TParticipant = {
+  _id: mongoose.Types.ObjectId;
+  username: string;
+  score?: number;
 };

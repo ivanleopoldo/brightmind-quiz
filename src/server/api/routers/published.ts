@@ -39,6 +39,8 @@ export const publishedRouter = createTRPCRouter({
         });
       }
 
+      console.log(result);
+
       return result?.participants[0];
     }),
 
@@ -59,6 +61,19 @@ export const publishedRouter = createTRPCRouter({
     const result = await Published.findOne({
       quizId: input,
     }).lean();
+    return result;
+  }),
+  startQuiz: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+    const result = await Published.findOneAndUpdate(
+      {
+        quizId: input,
+      },
+      {
+        $set: {
+          start_status: true,
+        },
+      },
+    ).lean();
     return result;
   }),
 });

@@ -18,9 +18,9 @@ export default function Page() {
   );
 
   if (id) {
-    const { data } = api.published.getById.useQuery(id as string);
-    if (!data) {
-      toast.error("Invalid Code!");
+    const { data, error } = api.published.getById.useQuery(id as string);
+    if (error) {
+      toast.error("Error");
       redirect("/join");
     }
   }
@@ -105,7 +105,7 @@ export default function Page() {
                     if (id) {
                       if (!sessionStorage.getItem("user")) {
                         const user = await addParticipant({
-                          quizId: id.toString(),
+                          quizId: id as string,
                           username: username,
                           avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=d1d4f9,ffdfbf,ffd5dc,b6e3f4,c0aede`,
                         });
@@ -116,7 +116,7 @@ export default function Page() {
                               ...user,
                             }),
                           );
-                          router.push(`/join/${id}/lobby`);
+                        router.push(`/join/${id}/lobby`);
                         }
                       }
                     }

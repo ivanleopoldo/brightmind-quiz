@@ -21,12 +21,20 @@ const QuizSchema = new Schema(
           description: { type: String },
           points: { type: Number, default: 1 },
           duration: { type: Number, default: 0 },
-          choices: [
-            {
-              title: { type: String, required: true },
-              isAnswer: { type: Boolean },
-            },
-          ],
+          choices: {
+            type: [
+              {
+                title: { type: String, required: true },
+                isAnswer: { type: Boolean },
+              },
+            ],
+            default: [
+              { title: "Choice 1", isAnswer: false },
+              { title: "Choice 2", isAnswer: true },
+              { title: "Choice 3", isAnswer: false },
+              { title: "Choice 4", isAnswer: false },
+            ],
+          },
         },
       ],
       default: [

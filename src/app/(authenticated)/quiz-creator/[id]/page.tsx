@@ -16,10 +16,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 interface Question {
+  quizId: string;
+  _id: string;
   title: string;
+  duration: number;
+  points: number;
   description: string;
   choices: { title: string; isAnswer: boolean }[];
 }
@@ -27,21 +32,44 @@ interface Question {
 export default function Quiz() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = api.quiz.getOne.useQuery(id!);
+  const utils = api.useUtils();
+  const { mutate: updateQuestion } = api.quiz.updateQuestion.useMutation();
+  const { mutate: addQuestion } = api.quiz.addQuestion.useMutation({
+    onSuccess: () => {
+      utils.quiz.getOne.invalidate(id);
+    },
+  });
+  const { mutate: deleteQuestion } = api.quiz.deleteQuestion.useMutation({
+    onSuccess: () => {
+      utils.quiz.getOne.invalidate(id);
+    },
+  });
   console.log(data);
 
   const [selected, setSelected] = useState(0);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
-  const questionRefs = useRef<(HTMLDivElement | null)[]>([]); // Stores refs to all question cards
+  const questionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const autosaveRef = useRef<NodeJS.Timeout | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Sync state when data is fetched
   useEffect(() => {
     if (data?.questions) {
       setQuestions(data.questions);
+      console.log(data.questions);
     }
   }, [data]);
 
-  // Observe which card is snapped
+  useEffect(() => {
+    if (autosaveRef.current) clearTimeout(autosaveRef.current);
+    autosaveRef.current = setTimeout(() => handleSave(), 5000);
+
+    return () => {
+      if (autosaveRef.current) clearTimeout(autosaveRef.current);
+    };
+  }, [questions]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,7 +85,7 @@ export default function Quiz() {
       },
       {
         root: null,
-        threshold: 0.75, // Fires when 75% of a card is visible
+        threshold: 0.75,
       },
     );
 
@@ -68,15 +96,80 @@ export default function Quiz() {
     return () => observer.disconnect();
   }, [questions]);
 
+  useEffect(() => {
+    if (!questions[selected]) return; // Ensure question exists
+    const correctIndex = questions[selected]?.choices.findIndex(
+      (c) => c.isAnswer,
+    );
+    setSelectedAnswer(correctIndex !== -1 ? correctIndex.toString() : null);
+  }, [selected, questions]);
+
+  const handleUpdateLocal = (index: number, updatedQuestion: Question) => {
+    setQuestions((prev) =>
+      prev.map((q, i) => (i === index ? updatedQuestion : q)),
+    );
+  };
+
+  const handleRadioChange = (value: string) => {
+    setSelectedAnswer(value);
+    setQuestions((prev) =>
+      prev.map((q, i) =>
+        i === selected
+          ? {
+              ...q,
+              choices: q.choices.map((choice, idx) => ({
+                ...choice,
+                isAnswer: idx.toString() === value,
+              })),
+            }
+          : q,
+      ),
+    );
+  };
+
+  const handleAddQuestion = () => {
+    addQuestion({
+      quizId: data?._id,
+      title: "New Question",
+      description: "This is a sample question",
+    });
+  };
+
+  const handleSave = () => {
+    if (isSaving) return;
+    setIsSaving(true);
+
+    updateQuestion(
+      {
+        quizId: data?._id,
+        title: questions[selected]!.title,
+        questionId: questions[selected]!._id,
+        description: questions[selected]!.description,
+        choices: questions[selected]!.choices,
+        duration: questions[selected]!.duration, // Include duration
+        points: questions[selected]!.points,
+      },
+      {
+        onSuccess: () => {
+          setIsSaving(false);
+        },
+      },
+    );
+  };
+
+  if (isLoading || questions.length === 0) {
+    return <div>Loading...</div>;
+  }
+
   if (isLoading || questions.length === 0) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] w-full overflow-hidden">
+    <div className="relative flex h-[calc(100vh-6rem)] w-full overflow-hidden">
       {/* Left Side: Scrollable Questions List */}
-      <div className="flex w-full flex-grow flex-col overflow-hidden p-6">
-        <div className="flex snap-y snap-mandatory flex-col gap-6 overflow-y-auto">
+      <div className="flex w-full flex-col overflow-hidden p-6">
+        <div className="flex h-full snap-y snap-mandatory flex-col gap-6 overflow-y-auto">
           {questions.map((item, index) => (
             <Card
               key={index}
@@ -86,9 +179,23 @@ export default function Quiz() {
               onClick={() => setSelected(index)}
               className={cn(
                 selected === index && "border border-primary",
-                "min-h-[100%] w-full flex-shrink-0 snap-start",
+                "relative min-h-full w-full flex-shrink-0 snap-start",
               )}
             >
+              {/* Delete Icon */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-2 z-10 rounded-full"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteQuestion({ quizId: data?._id, questionId: item._id });
+                }} // Call handleDeleteQuestion
+              >
+                <Trash2 className="h-4 w-4" />
+
+                <span className="sr-only">Delete</span>
+              </Button>
               <CardContent className="relative grid h-full w-full grid-cols-1 grid-rows-2 gap-4">
                 <div className="flex flex-col items-center justify-center gap-6 p-4">
                   <CardTitle className="text-3xl font-bold">
@@ -102,8 +209,23 @@ export default function Quiz() {
                       key={idx}
                       variant={choice.isAnswer ? "secondary" : "default"}
                       className="flex h-full w-[calc(50%-0.5rem)] shrink-0 justify-center md:w-[calc(25%-0.75rem)]"
+                      onClick={() => {
+                        setQuestions((prev) =>
+                          prev.map((q, i) =>
+                            i === index
+                              ? {
+                                  ...q,
+                                  choices: q.choices.map((c, j) => ({
+                                    ...c,
+                                    isAnswer: j === idx, // Corrected logic here
+                                  })),
+                                }
+                              : q,
+                          ),
+                        );
+                      }}
                     >
-                      <p className="block whitespace-normal break-all text-center">
+                      <p className="block whitespace-normal break-all text-center text-2xl">
                         {choice.title}
                       </p>
                     </Button>
@@ -112,10 +234,10 @@ export default function Quiz() {
               </CardContent>
             </Card>
           ))}
-          <Card className="min-h-[40rem] w-full flex-shrink-0 snap-start">
+          <Button className="snap-start" onClick={handleAddQuestion}>
             <Plus />
-            <h1>Add a new question</h1>
-          </Card>
+            Add Question!
+          </Button>
         </div>
       </div>
 
@@ -128,8 +250,8 @@ export default function Quiz() {
             <TabsTrigger className="w-full" value="questions">
               Questions
             </TabsTrigger>
-            <TabsTrigger className="w-full" value="settings">
-              Settings
+            <TabsTrigger className="w-full" value="project">
+              Project Settings
             </TabsTrigger>
           </TabsList>
         </div>
@@ -190,6 +312,7 @@ export default function Quiz() {
                       .findIndex((choice) => choice.isAnswer)
                       .toString() ?? "0"
                   }
+                  onValueChange={handleRadioChange}
                 >
                   {questions[selected].choices.map((choice, idx) => (
                     <div key={idx} className="mt-2 flex items-center gap-2">
@@ -215,9 +338,73 @@ export default function Quiz() {
                     </div>
                   ))}
                 </RadioGroup>
+                <div className="mt-4">
+                  <Label htmlFor="duration">Duration (seconds)</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      type="number"
+                      id="duration"
+                      name="duration"
+                      value={questions[selected]?.duration || ""}
+                      onChange={(e) => {
+                        const duration = parseInt(e.target.value, 10);
+                        setQuestions((prev) =>
+                          prev.map((q, i) =>
+                            i === selected
+                              ? {
+                                  ...q,
+                                  duration: isNaN(duration) ? 0 : duration,
+                                }
+                              : q,
+                          ),
+                        );
+                      }}
+                    />
+                    <Slider
+                      defaultValue={[questions[selected]?.duration || 0]}
+                      min={0}
+                      max={300}
+                      step={5}
+                      onValueChange={(e) => {
+                        const duration = parseInt(e[0] ?? 0, 10);
+                        setQuestions((prev) =>
+                          prev.map((q, i) =>
+                            i === selected ? { ...q, duration } : q,
+                          ),
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Points Input */}
+                <div className="mt-4">
+                  <Label htmlFor="points">Points</Label>
+                  <Input
+                    type="number"
+                    id="points"
+                    name="points"
+                    value={questions[selected]?.points}
+                    onChange={(e) => {
+                      const points = parseInt(e.target.value, 10);
+                      setQuestions((prev) =>
+                        prev.map((q, i) =>
+                          i === selected
+                            ? { ...q, points: isNaN(points) ? 0 : points }
+                            : q,
+                        ),
+                      );
+                    }}
+                  />
+                </div>
               </div>
             </div>
           )}
+        </TabsContent>
+        <TabsContent className="m-4" value="project">
+          <div className="">
+            <Button>Publish</Button>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

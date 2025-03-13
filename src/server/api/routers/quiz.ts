@@ -33,9 +33,7 @@ export const quizRouter = createTRPCRouter({
       return quiz.toObject();
     }),
   getOne: publicProcedure.input(z.string()).query(async ({ input }) => {
-    const quiz = await Quiz.findOne({
-      _id: new mongoose.Types.ObjectId(input),
-    });
+    const quiz = await Quiz.findById(new mongoose.Types.ObjectId(input));
 
     return quiz && quiz.toObject();
   }),
@@ -45,9 +43,6 @@ export const quizRouter = createTRPCRouter({
         quizId: z.string(),
         title: z.string(),
         description: z.string().optional(),
-        choices: z.array(
-          z.object({ title: z.string(), isAnswer: z.boolean() }),
-        ),
       }),
     )
     .mutation(async ({ input }) => {
@@ -58,7 +53,6 @@ export const quizRouter = createTRPCRouter({
             questions: {
               title: input.title,
               description: input.description,
-              choices: input.choices,
             },
           },
         },
@@ -67,25 +61,44 @@ export const quizRouter = createTRPCRouter({
   updateQuestion: publicProcedure
     .input(
       z.object({
+        quizId: z.string(),
         questionId: z.string(),
         description: z.string(),
         title: z.string(),
         choices: z.array(
           z.object({ title: z.string(), isAnswer: z.boolean() }),
         ),
+        duration: z.number().optional(),
+        points: z.number().optional(),
       }),
     )
     .mutation(async ({ input }) => {
       const updated = await Quiz.updateOne(
         {
-          _id: 1,
-          "questions._id": new mongoose.Types.ObjectId(input.questionId),
+          _id: input.quizId,
+          "questions._id": input.questionId,
         },
         {
           $set: {
             "questions.$.title": input.title,
             "questions.$.description": input.description,
             "questions.$.choices": input.choices,
+            "questions.$.duration": input.duration,
+            "questions.$.points": input.points,
+          },
+        },
+      );
+    }),
+  deleteQuestion: publicProcedure
+    .input(z.object({ quizId: z.string(), questionId: z.string() }))
+    .mutation(async ({ input }) => {
+      const result = await Quiz.updateOne(
+        {
+          _id: input.quizId,
+        },
+        {
+          $pull: {
+            questions: { _id: input.questionId },
           },
         },
       );

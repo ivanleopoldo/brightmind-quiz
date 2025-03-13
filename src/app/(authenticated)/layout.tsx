@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import React, { PropsWithChildren } from "react";
 import { headers } from "next/headers";
+import { HydrateClient } from "@/trpc/server";
 
 export default async function ProtectedLayout({ children }: PropsWithChildren) {
   const session = auth.api.getSession({ headers: await headers() });

@@ -14,7 +14,6 @@ export const dbConnect = async () => {
   if (cached.conn) return cached.conn;
 
   try{
-
   cached.conn = await mongoose.connect(MONGODB_URI);
   }
   catch (error) {

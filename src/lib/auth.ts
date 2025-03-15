@@ -1,6 +1,9 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import mongoose from "mongoose";
+import dbConnect from "./db";
+
+await dbConnect();
 
 export const auth = betterAuth({
   database: mongodbAdapter(mongoose.connection.db!),
@@ -17,5 +20,8 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
   },
-  trustedOrigins: ["http://localhost:3000", "https://brightmind-quiz.vercel.app"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://brightmind-quiz.vercel.app",
+  ],
 });

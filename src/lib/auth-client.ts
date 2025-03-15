@@ -1,5 +1,3 @@
 import { createAuthClient } from "better-auth/react";
 
-export const authClient = createAuthClient({
-  baseURL: "https://brightmind-quiz.vercel.app/",
-});
+export const authClient = createAuthClient();

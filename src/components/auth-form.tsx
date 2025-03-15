@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useCallback } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export type TAuthFormProps = React.ComponentPropsWithoutRef<"form"> & {
   variant?: "login" | "signup";
@@ -16,7 +17,11 @@ export default function AuthForm({
 }: TAuthFormProps) {
   const label = variant === "login" ? "Login" : "Sign up";
 
-  const loginWithGoogle = async () => {};
+  const loginWithGoogle = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    });
+  };
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>

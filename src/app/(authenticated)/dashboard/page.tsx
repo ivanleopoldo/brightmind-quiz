@@ -107,11 +107,11 @@ export default function Dashboard() {
                     />
                   );
                 })}
-              <CreateNewCard />
+              <CreateNewCard onClick={() => redirect("/quiz-creator")} />
             </>
           )}
         </div>
       </div>
     </div>
   );
-}
+} 

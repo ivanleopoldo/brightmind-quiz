@@ -12,6 +12,7 @@ import * as React from "react";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavSecondary } from "@/components/nav-secondary";
+import { authClient } from "@/lib/auth-client";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -22,6 +23,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+const { useSession } = authClient;
 
 const data = {
   user: {
@@ -95,6 +98,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -118,7 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

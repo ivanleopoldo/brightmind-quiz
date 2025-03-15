@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 import {
   Card,
@@ -419,12 +419,43 @@ export default function Quiz() {
           )}
         </TabsContent>
         <TabsContent className="m-4" value="project">
-          <div className="">
+          <div className="flex w-full flex-col gap-4">
+            <div className="flex w-full flex-col gap-4">
+              <p>Join Code</p>
+              <div
+                className={cn(
+                  isPublished ? "" : "bg-foreground/20 text-muted-foreground",
+                  "flex w-full flex-col rounded-md border p-2",
+                )}
+              >
+                <p>{id}</p>
+              </div>
+              <div className="flex w-full justify-center">
+              <p className="font-extralight text-muted-foreground">OR</p>
+              </div>
+              <p>Link</p>
+              <div
+                className={cn(
+                  isPublished ? "" : "bg-foreground/20 text-muted-foreground",
+                  "flex w-full flex-col overflow-hidden text-ellipsis rounded-md border p-2",
+                )}
+              >
+                <p>https://brightmind-quiz.vercel.app/join/{id}</p>
+              </div>
+            </div>
             {!isPublished ? (
-              <Button onClick={() => publishQuiz(id)}>Publish</Button>
+              <Button className="w-full" onClick={() => {
+                handleSave();
+                publishQuiz(id)
+                redirect(`/quiz-creator/${id}/results`)}}>
+                Publish
+              </Button>
             ) : (
-              <Button onClick={() => unpublishQuiz(id)}>Unpublish</Button>
+              <Button className="w-full" onClick={() => unpublishQuiz(id)}>
+                Unpublish
+              </Button>
             )}
+            <Button disabled={!isPublished} onClick={() => redirect(`/quiz-creator/${id}/results`)}>Redirect to Leaderboard</Button>
           </div>
         </TabsContent>
       </Tabs>

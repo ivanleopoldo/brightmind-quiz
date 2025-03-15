@@ -58,13 +58,13 @@ export default function QuizPage() {
       refetchInterval: 1000,
     });
 
-  if (hasAnsweredObj?.hasAnswered) {
-    redirect(`/join/${id}/lobby/${userId}/results`);
-  }
+  // if (hasAnsweredObj?.hasAnswered) {
+  //   redirect(`/join/${id}/lobby/${userId}/results`);
+  // }
 
-  if (!status?.start_status) {
-    redirect(`/join/${id}/lobby/${userId}`);
-  }
+  // if (!status?.start_status) {
+  //   redirect(`/join/${id}/lobby/${userId}`);
+  // }
 
   // State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -181,7 +181,7 @@ export default function QuizPage() {
     <div className="relative h-screen w-full p-4">
       <div className="mx-auto grid h-full w-full grid-cols-1 gap-4 lg:grid-cols-6">
         {/* Quiz section - takes up 2/3 on desktop */}
-        <div className="w-full lg:col-span-5">
+        <div className="w-full h-full lg:col-span-5">
           {!quizFinished ? (
             <Card className="h-full w-full border shadow-none">
               <CardHeader className="border-b">

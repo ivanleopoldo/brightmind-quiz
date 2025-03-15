@@ -2,7 +2,7 @@
 
 import React from "react";
 import { api } from "@/trpc/react";
-import { useParams } from "next/navigation";
+import { useParams, redirect } from "next/navigation";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,7 @@ function Results() {
           {id}
         </Badge>
         <div className="flex flex-row gap-2">
+          <Button onClick={() => redirect(`/quiz-creator/${id}`)}>Edit Quiz</Button>
           {quiz?.start_status ? (
             <Button onClick={() => stopQuiz(id as string)}>Stop Quiz</Button>
           ) : (

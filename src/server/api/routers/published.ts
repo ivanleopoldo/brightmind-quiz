@@ -57,6 +57,58 @@ export const publishedRouter = createTRPCRouter({
       }).lean();
       return result;
     }),
+  incrementScore: publicProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+        userId: z.string(),
+        score: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const result = await Published.findOneAndUpdate(
+        {
+          quizId: input.quizId,
+          "participants._id": input.userId,
+        },
+        {
+          $inc: { "participants.$.score": input.score },
+        },
+      ).lean();
+      console.log(result);
+    }),
+  hasAnswered: publicProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const result = await Published.findOneAndUpdate(
+        {
+          quizId: input.quizId,
+          "participants._id": input.userId,
+        },
+        {
+          "participants.$.hasAnswered": true,
+        },
+      );
+    }),
+  getParticipant: publicProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const result = await Published.findOne({
+        quizId: input.quizId,
+      }).select({ participants: { $elemMatch: { _id: input.userId } } });
+
+      return result?.toObject().participants[0];
+    }),
   getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     const result = await Published.findOne({
       quizId: input,

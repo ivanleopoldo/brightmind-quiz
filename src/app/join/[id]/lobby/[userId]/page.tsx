@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock, Users } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, redirect } from "next/navigation";
 import { api } from "@/trpc/react";
 
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export default function QuizLobby() {
-  const { id } = useParams();
-  const userId = JSON.parse(sessionStorage.getItem("user"));
+  const { id, userId } = useParams();
   const { data } = api.published.getById.useQuery(id as string, {
     refetchInterval: 1000,
   });
@@ -26,7 +25,7 @@ export default function QuizLobby() {
   console.log(userId);
 
   if (data?.start_status) {
-    console.log("started");
+    redirect(`/join/${id}/lobby/${userId}/start`);
   }
 
   const getTimeSinceJoined = (joinedAt: Date) => {
@@ -61,7 +60,7 @@ export default function QuizLobby() {
               <div
                 key={player._id.toString()}
                 className={`flex flex-col items-center rounded-lg p-3 transition-all duration-300 ${
-                  player._id.toString() === userId._id.toString()
+                  player._id.toString() === userId
                     ? "bg-primary/10 ring-1 ring-primary"
                     : "hover:bg-secondary"
                 }`}

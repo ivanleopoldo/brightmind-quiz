@@ -103,22 +103,12 @@ export default function Page() {
                 onClick={async () => {
                   try {
                     if (id) {
-                      if (!sessionStorage.getItem("user")) {
-                        const user = await addParticipant({
-                          quizId: id as string,
-                          username: username,
-                          avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=d1d4f9,ffdfbf,ffd5dc,b6e3f4,c0aede`,
-                        });
-                        if (user) {
-                          sessionStorage.setItem(
-                            "user",
-                            JSON.stringify({
-                              ...user,
-                            }),
-                          );
-                        router.push(`/join/${id}/lobby`);
-                        }
-                      }
+                      const user = await addParticipant({
+                        quizId: id as string,
+                        username: username,
+                        avatar: `https://api.dicebear.com/9.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=d1d4f9,ffdfbf,ffd5dc,b6e3f4,c0aede`,
+                      });
+                      router.push(`/join/${id}/lobby/${user?._id.toString()}`);
                     }
                   } catch (err) {
                     console.log(err);

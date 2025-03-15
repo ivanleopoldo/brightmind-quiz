@@ -55,7 +55,6 @@ export default function Quiz() {
       refetch();
     },
   });
-  const { mutate: startQuiz } = api.published.startQuiz.useMutation();
   const { mutate: deleteQuestion } = api.quiz.deleteQuestion.useMutation({
     onSuccess: () => {
       utils.quiz.getOne.invalidate(id);
@@ -426,9 +425,6 @@ export default function Quiz() {
             ) : (
               <Button onClick={() => unpublishQuiz(id)}>Unpublish</Button>
             )}
-          </div>
-          <div>
-            <Button onClick={() => startQuiz(id)}>Start</Button>
           </div>
         </TabsContent>
       </Tabs>

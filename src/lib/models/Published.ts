@@ -11,6 +11,7 @@ const PublishedSchema = new Schema({
         username: { type: String, required: true },
         avatar: { type: String },
         score: { type: Number, default: 0 },
+        hasAnswered: { type: Boolean, default: false },
         joinedAt: { type: Date, default: Date.now },
       },
     ],

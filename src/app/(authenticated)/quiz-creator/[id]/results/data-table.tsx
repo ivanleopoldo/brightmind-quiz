@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
   getPaginationRowModel,
+  Row,
 } from "@tanstack/react-table";
 
 import {
@@ -23,6 +24,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { TParticipant } from "@/lib/types";
+import  exportToCsv  from "tanstack-table-export-to-csv";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,13 +35,15 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  emptyMessage = "No results.",
+}: { emptyMessage?: string } & DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     {
       id: "score",
       desc: true,
     },
   ]);
+
   const table = useReactTable({
     data,
     columns,
@@ -55,6 +60,18 @@ export function DataTable<TData, TValue>({
       },
     },
   });
+
+
+const handleExportToCsv = (): void => {
+    const headers = table
+      .getHeaderGroups()
+      .map((x) => x.headers)
+      .flat();
+
+    const rows = table.getCoreRowModel().rows;
+
+    exportToCsv("persons_data", headers, rows);
+  };
 
   return (
     <div>
@@ -101,29 +118,40 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-start space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronRight />
+          </Button>
+        </div>
         <Button
-          variant="outline"
-          size="icon"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => {
+            handleExportToCsv()
+          }}
+          disabled={data.length === 0}
+          className="bg-green-700"
         >
-          <ChevronLeft />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          <ChevronRight />
+          Export
         </Button>
       </div>
     </div>

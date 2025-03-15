@@ -38,7 +38,22 @@ function Results() {
     },
   });
 
-  console.log(quiz);
+  const { data: isPublished, refetch } = api.published.getById.useQuery(id!, {
+    refetchOnWindowFocus: false,
+  });
+
+  const { mutate: publishQuiz } = api.published.publishQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.publishQuiz.invalidate(id);
+      refetch();
+    },
+  });
+  const { mutate: unpublishQuiz } = api.published.unpublishQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.unpublishQuiz.invalidate(id);
+      refetch();
+    },
+  });
 
   if (isLoading || isQuizLoading || isQuizInfoLoading) {
     return <div>Loading...</div>;
@@ -52,16 +67,45 @@ function Results() {
           {id}
         </Badge>
         <div className="flex flex-row gap-2">
-          <Button onClick={() => redirect(`/quiz-creator/${id}`)}>Edit Quiz</Button>
+          <Button onClick={() => redirect(`/quiz-creator/${id}`)}>
+            Edit Quiz
+          </Button>
           {quiz?.start_status ? (
-            <Button onClick={() => stopQuiz(id as string)}>Stop Quiz</Button>
+            <Button
+              disabled={!isPublished}
+              onClick={() => stopQuiz(id as string)}
+            >
+              Stop Quiz
+            </Button>
           ) : (
-            <Button onClick={() => startQuiz(id as string)}>Start Quiz</Button>
+            <Button
+              disabled={!isPublished}
+              onClick={() => startQuiz(id as string)}
+            >
+              Start Quiz
+            </Button>
           )}
-          <Button className="bg-green-700">Export</Button>
+          {!isPublished ? (
+            <Button
+              className="w-full"
+              onClick={() => {
+                publishQuiz(id);
+              }}
+            >
+              Publish
+            </Button>
+          ) : (
+            <Button className="w-full" onClick={() => unpublishQuiz(id)}>
+              Unpublish
+            </Button>
+          )}
         </div>
       </div>
-      <DataTable columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={data ?? []}
+        emptyMessage={!isPublished ? "Publish quiz!" : "No results."}
+      />
     </div>
   );
 }

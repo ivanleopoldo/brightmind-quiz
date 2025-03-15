@@ -26,9 +26,17 @@ function Results() {
   const { data: quizInfo, isLoading: isQuizInfoLoading } =
     api.quiz.getByQuizId.useQuery(id as string);
 
-  const { mutate: stopQuiz } = api.published.stopQuiz.useMutation();
+  const { mutate: stopQuiz } = api.published.stopQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.invalidate();
+    },
+  });
 
-  const { mutate: startQuiz } = api.published.startQuiz.useMutation();
+  const { mutate: startQuiz } = api.published.startQuiz.useMutation({
+    onSuccess: () => {
+      utils.published.invalidate();
+    },
+  });
 
   console.log(quiz);
 

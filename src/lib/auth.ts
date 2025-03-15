@@ -1,11 +1,8 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import mongoose from "mongoose";
-import dbConnect from "./db";
 
-export const auth = async function getAuth(){ 
-  await dbConnect();
-  return betterAuth({
+export const auth = betterAuth({
   database: mongodbAdapter(mongoose.connection.db!),
   emailAndPassword: {
     enabled: true,
@@ -25,4 +22,4 @@ export const auth = async function getAuth(){
     "https://brightmind-quiz.vercel.app",
   ],
 });
-}
+

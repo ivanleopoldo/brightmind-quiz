@@ -109,6 +109,14 @@ export const publishedRouter = createTRPCRouter({
 
       return result?.toObject().participants[0];
     }),
+  getAllParticipants: publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      const result = await Published.findOne({
+        quizId: input,
+      });
+      return result?.toObject().participants;
+    }),
   getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     const result = await Published.findOne({
       quizId: input,

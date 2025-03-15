@@ -53,13 +53,18 @@ export default function QuizPage() {
     userId: userId as string,
   });
 
-  // if (hasAnsweredObj?.hasAnswered) {
-  //   redirect(`/join/${id}/lobby/${userId}/results`);
-  // }
+  const { data: participants, isLoading: isParticipantsLoading } =
+    api.published.getAllParticipants.useQuery(id as string, {
+      refetchInterval: 1000,
+    });
 
-  // if (!status?.start_status) {
-  //   redirect(`/join/${id}/lobby/${userId}`);
-  // }
+  if (hasAnsweredObj?.hasAnswered) {
+    redirect(`/join/${id}/lobby/${userId}/results`);
+  }
+
+  if (!status?.start_status) {
+    redirect(`/join/${id}/lobby/${userId}`);
+  }
 
   // State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -168,7 +173,7 @@ export default function QuizPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isParticipantsLoading) {
     return <div>Loading...</div>;
   }
 
@@ -334,39 +339,39 @@ export default function QuizPage() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              {/* {sortedPlayers.map((player, index) => ( */}
-              {/*   <div */}
-              {/*     key={player.id} */}
-              {/*     className={`flex items-center rounded-lg p-3 ${ */}
-              {/*       player.isCurrentUser */}
-              {/*         ? "bg-primary/10 ring-1 ring-primary" */}
-              {/*         : "" */}
-              {/*     }`} */}
-              {/*   > */}
-              {/*     <div className="flex flex-1 items-center gap-3"> */}
-              {/*       <div className="w-6 text-center font-bold"> */}
-              {/*         {index + 1} */}
-              {/*       </div> */}
-              {/*       <Avatar className="h-10 w-10"> */}
-              {/*         <AvatarImage src={player.avatar} alt={player.name} /> */}
-              {/*         <AvatarFallback> */}
-              {/*           {player.name.substring(0, 2).toUpperCase()} */}
-              {/*         </AvatarFallback> */}
-              {/*       </Avatar> */}
-              {/*       <div> */}
-              {/*         <div className="flex items-center font-medium"> */}
-              {/*           {player.name} */}
-              {/*           {player.isCurrentUser && ( */}
-              {/*             <Badge variant="outline" className="ml-1 text-xs"> */}
-              {/*               You */}
-              {/*             </Badge> */}
-              {/*           )} */}
-              {/*         </div> */}
-              {/*       </div> */}
-              {/*     </div> */}
-              {/*     <div className="text-lg font-bold">{player.score}</div> */}
-              {/*   </div> */}
-              {/* ))} */}
+              {participants
+                ?.sort((a, b) => b.score - a.score)
+                .map((player, index) => (
+                  <div
+                    key={player._id.toString()}
+                    className={`flex items-center rounded-lg p-3 ${
+                      player._id.toString() === userId
+                        ? "bg-primary/10 ring-1 ring-primary"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex flex-1 items-center gap-3">
+                      <div className="w-6 text-center font-bold">
+                        {index + 1}
+                      </div>
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={player.avatar}
+                          alt={player.username}
+                        />
+                        <AvatarFallback>
+                          {player.username.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex items-center font-medium">
+                        {player.username}
+                        {player._id.toString() === userId && (
+                          <Badge className="ml-1 text-xs">You</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
           </CardContent>
         </Card>

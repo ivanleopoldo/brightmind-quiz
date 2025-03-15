@@ -136,4 +136,18 @@ export const publishedRouter = createTRPCRouter({
     ).lean();
     return result;
   }),
+
+  stopQuiz: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+    const result = await Published.findOneAndUpdate(
+      {
+        quizId: input,
+      },
+      {
+        $set: {
+          start_status: false,
+        },
+      },
+    ).lean();
+    return result;
+  }),
 });

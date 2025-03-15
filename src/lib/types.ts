@@ -25,5 +25,8 @@ export type TQuiz = {
 export type TParticipant = {
   _id: mongoose.Types.ObjectId;
   username: string;
+  avatar: string;
+  joinedAt: Date;
+  hasAnswered: boolean;
   score?: number;
 };

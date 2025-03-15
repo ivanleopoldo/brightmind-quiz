@@ -8,7 +8,7 @@ const PublishedSchema = new Schema({
   participants: {
     type: [
       {
-        username: { type: String, required: true },
+        username: { type: String, required: true, unique: true },
         avatar: { type: String },
         score: { type: Number, default: 0 },
         hasAnswered: { type: Boolean, default: false },

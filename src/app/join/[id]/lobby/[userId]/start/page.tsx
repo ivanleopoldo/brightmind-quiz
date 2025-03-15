@@ -181,7 +181,7 @@ export default function QuizPage() {
     <div className="relative h-screen w-full p-4">
       <div className="mx-auto grid h-full w-full grid-cols-1 gap-4 lg:grid-cols-6">
         {/* Quiz section - takes up 2/3 on desktop */}
-        <div className="w-full h-full lg:col-span-5">
+        <div className="h-full w-full lg:col-span-5">
           {!quizFinished ? (
             <Card className="h-full w-full border shadow-none">
               <CardHeader className="border-b">
@@ -286,7 +286,7 @@ export default function QuizPage() {
                     size="lg"
                     onClick={() => (window.location.href = "/join")}
                   >
-                    Back to Lobby
+                    Check Results
                   </Button>
                 </div>
               </CardContent>

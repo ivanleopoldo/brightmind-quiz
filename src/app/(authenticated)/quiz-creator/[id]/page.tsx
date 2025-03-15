@@ -431,7 +431,7 @@ export default function Quiz() {
                 <p>{id}</p>
               </div>
               <div className="flex w-full justify-center">
-              <p className="font-extralight text-muted-foreground">OR</p>
+                <p className="font-extralight text-muted-foreground">OR</p>
               </div>
               <p>Link</p>
               <div
@@ -444,10 +444,13 @@ export default function Quiz() {
               </div>
             </div>
             {!isPublished ? (
-              <Button className="w-full" onClick={() => {
-                handleSave();
-                publishQuiz(id)
-                redirect(`/quiz-creator/${id}/results`)}}>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  handleSave();
+                  publishQuiz(id);
+                }}
+              >
                 Publish
               </Button>
             ) : (
@@ -455,7 +458,12 @@ export default function Quiz() {
                 Unpublish
               </Button>
             )}
-            <Button disabled={!isPublished} onClick={() => redirect(`/quiz-creator/${id}/results`)}>Redirect to Leaderboard</Button>
+            <Button
+              disabled={!isPublished}
+              onClick={() => redirect(`/quiz-creator/${id}/results`)}
+            >
+              Go to Leaderboard
+            </Button>
           </div>
         </TabsContent>
       </Tabs>

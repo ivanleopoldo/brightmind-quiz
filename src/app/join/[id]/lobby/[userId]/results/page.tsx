@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-function Results() {
+export default function Results() {
   const { id, userId } = useParams();
   const { data: participants, isLoading: isParticipantsLoading } =
     api.published.getAllParticipants.useQuery(id as string, {
@@ -37,7 +37,10 @@ function Results() {
                 <div className="flex flex-1 items-center gap-3">
                   <div className="w-6 text-center font-bold">{index + 1}</div>
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={player.avatar} alt={player.username} />
+                    <AvatarImage
+                      src={player.avatar ?? ""}
+                      alt={player.username}
+                    />
                     <AvatarFallback>
                       {player.username.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
@@ -61,5 +64,3 @@ function Results() {
     </div>
   );
 }
-
-export default Results;

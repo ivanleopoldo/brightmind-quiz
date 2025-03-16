@@ -185,6 +185,9 @@ export default function Quiz() {
   return (
     <div className="relative flex h-[calc(100vh-6rem)] w-full overflow-hidden">
       {/* Left Side: Scrollable Questions List */}
+      <div className="absolute bottom-2 right-8">
+        <p className="text-foreground/20">{isSaving ? "Saving..." : "Saved"}</p>
+      </div>
       <div className="flex w-full flex-col overflow-hidden p-6">
         <div className="flex h-full snap-y snap-mandatory flex-col gap-6 overflow-y-auto">
           {questions.map((item, index) => (
@@ -415,6 +418,7 @@ export default function Quiz() {
                   />
                 </div>
               </div>
+              <Button onClick={() => handleSave()}>Save</Button>
             </div>
           )}
         </TabsContent>

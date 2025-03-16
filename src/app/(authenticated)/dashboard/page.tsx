@@ -106,6 +106,7 @@ export default function Dashboard() {
                     <QuizCard
                       onClick={() => redirect(`/quiz-creator/${item._id}`)}
                       key={index}
+                      quizId={item._id.toString()}
                       data={item}
                     />
                   );
@@ -117,4 +118,5 @@ export default function Dashboard() {
       </div>
     </div>
   );
-} 
+}
+

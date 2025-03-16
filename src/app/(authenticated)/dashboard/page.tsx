@@ -1,6 +1,6 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import CreateNewCard from "@/components/create-new-card";
 import QuizCard from "@/components/quiz-card";
@@ -17,13 +17,17 @@ import { redirect } from "next/navigation";
 
 export default function Dashboard() {
   const isMobile = useIsMobile();
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const id = session?.user.id;
 
   const { data, isLoading } = api.quiz.getById.useQuery(id!, {
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
   });
+
+  if (isLoading || isPending) {
+    return <div>Loading...</div>;
+  }
 
   const tutorials = [
     <TutorialCard
@@ -119,4 +123,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

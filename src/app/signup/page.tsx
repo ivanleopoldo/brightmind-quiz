@@ -2,6 +2,7 @@
 import AuthForm from "@/components/auth-form";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Signup() {
   const signUp = async ({
@@ -18,11 +19,14 @@ export default function Signup() {
         password: password,
       },
       {
+        onRequest: () => {
+          toast.info("Creating your account!", { richColors: true });
+        },
         onError: (err) => {
-          console.error(err);
+          toast.error(err.error.message, { richColors: true });
         },
         onSuccess: () => {
-          console.log("account created");
+          toast.success("Account Created!", { richColors: true });
           redirect("/dashboard");
         },
       },

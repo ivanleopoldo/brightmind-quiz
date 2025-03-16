@@ -21,20 +21,15 @@ export default function Login() {
       },
       {
         onRequest: () => {
-          toast.info("Logging in...");
+          toast.info("Logging in...", { richColors: true });
         },
         onSuccess: () => {
           console.log("Logged in");
-          toast.success("Logged in");
+          toast.success("Logged in", { richColors: true });
           redirect("/dashboard");
         },
         onError: (error) => {
-          console.error("Login error:", error);
-          toast({
-            variant: "desctructive",
-            title: "Login Failed",
-            description: "Invalid Password or Email",
-          });
+          toast.error(error.error.message, { richColors: true });
         },
       },
     );

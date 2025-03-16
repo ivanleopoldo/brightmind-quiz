@@ -102,6 +102,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return <div>Loading...</div>;
   }
 
+  if (!session) {
+    console.log("No session");
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

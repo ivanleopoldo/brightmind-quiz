@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { api } from "@/trpc/react";
+import { toast } from "sonner";
 
 type SmallTextProps = {
   className?: string;
@@ -46,6 +47,7 @@ export default function QuizCard({
   const utils = api.useUtils();
   const { mutate: deleteQuiz } = api.quiz.deleteQuiz.useMutation({
     onSuccess: () => {
+      toast.success("Quiz deleted successfully", { richColors: true });
       utils.quiz.invalidate();
     },
   });

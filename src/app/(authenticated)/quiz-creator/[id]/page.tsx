@@ -32,6 +32,11 @@ interface Question {
 export default function Quiz() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = api.quiz.getOne.useQuery(id!);
+
+  // if (!data) {
+  //   redirect("/dashboard");
+  // }
+
   const { data: isPublished, refetch } = api.published.getById.useQuery(id!, {
     refetchOnWindowFocus: false,
   });
@@ -171,8 +176,6 @@ export default function Quiz() {
       },
     );
   };
-
-  const handlePublish = () => {};
 
   if (isLoading || questions.length === 0) {
     return <div>Loading...</div>;

@@ -6,11 +6,11 @@ import dbConnect from "./db";
 let auth: ReturnType<typeof betterAuth>;
 
 const initAuth = async () => {
-  await dbConnect();
+  const conn = await dbConnect();
   
-  if (!auth) {
+  if (!auth && conn.connection.readyState === 1) {
     auth = betterAuth({
-      database: mongodbAdapter(mongoose.connection.db!),
+      database: mongodbAdapter(conn.connection.db),
       emailAndPassword: {
         enabled: true,
       },
@@ -38,6 +38,10 @@ const initAuth = async () => {
         "https://brightmind-quiz.vercel.app",
       ],
     });
+  }
+  
+  if (!auth) {
+    throw new Error("Failed to initialize auth - database connection not ready");
   }
   
   return auth;

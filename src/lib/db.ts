@@ -10,10 +10,14 @@ export const dbConnect = async () => {
   if (cached.conn) return cached.conn;
 
   try {
-    cached.conn = await mongoose.connect(process.env.MONGODB_URI!, {
+    cached.conn = mongoose.createConnection(process.env.MONGODB_URI!, {
       autoIndex: true,
     });
     mongoose.set("bufferCommands", false);
+    if (cached.conn) {
+      mongoose.set("debug", true);
+      console.log("Connected to MongoDB");
+    }
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     throw error;

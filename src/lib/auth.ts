@@ -48,7 +48,9 @@ const initAuth = async () => {
           google: {
             clientId: process.env.GOOGLE_CLIENT_ID! as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET! as string,
-            redirectURI: "/",
+            enabled: true,
+            redirectURI:
+              "https://brightmind-quiz.vercel.app/api/auth/callback/google",
           },
         },
         session: {

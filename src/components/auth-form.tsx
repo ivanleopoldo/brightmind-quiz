@@ -20,6 +20,7 @@ export default function AuthForm({
   const loginWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
+      callbackURL: "/dashboard",
     });
   };
 

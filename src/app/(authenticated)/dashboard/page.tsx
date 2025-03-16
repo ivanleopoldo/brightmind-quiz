@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 "use client";
 import CreateNewCard from "@/components/create-new-card";
 import QuizCard from "@/components/quiz-card";

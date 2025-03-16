@@ -58,13 +58,13 @@ export default function QuizPage() {
       refetchInterval: 1000,
     });
 
-  // if (hasAnsweredObj?.hasAnswered) {
-  //   redirect(`/join/${id}/lobby/${userId}/results`);
-  // }
+  if (hasAnsweredObj?.hasAnswered) {
+    redirect(`/join/${id}/lobby/${userId}/results`);
+  }
 
-  // if (!status?.start_status) {
-  //   redirect(`/join/${id}/lobby/${userId}`);
-  // }
+  if (!status?.start_status) {
+    redirect(`/join/${id}/lobby/${userId}`);
+  }
 
   // State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -284,7 +284,9 @@ export default function QuizPage() {
                 <div className="flex justify-center">
                   <Button
                     size="lg"
-                    onClick={() => (window.location.href = "/join")}
+                    onClick={() =>
+                      redirect(`/join/${id}/lobby/${userId}/results`)
+                    }
                   >
                     Check Results
                   </Button>

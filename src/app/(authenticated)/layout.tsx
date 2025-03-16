@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -20,6 +20,7 @@ import { headers } from "next/headers";
 import { HydrateClient } from "@/trpc/server";
 
 export default async function ProtectedLayout({ children }: PropsWithChildren) {
+  const auth = await getAuth();
   const session = auth.api.getSession({ headers: await headers() });
 
   if (!session) {

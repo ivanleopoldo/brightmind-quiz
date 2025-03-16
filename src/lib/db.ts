@@ -27,27 +27,30 @@ async function dbConnect() {
   if (cached.conn?.connection?.readyState === 1) {
     return cached.conn;
   }
-  
+
   // Reset connection if not ready
   cached.conn = null;
   cached.promise = null;
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true,
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      console.log("DB connected successfully");
-      return mongoose;
-    }).catch((err) => {
-      console.error("DB connection error:", err);
-      cached.promise = null;
-      throw err;
-    });
+    cached.promise = mongoose
+      .connect(MONGODB_URI!, opts)
+      .then((mongoose) => {
+        console.log("DB connected successfully");
+        return mongoose;
+      })
+      .catch((err) => {
+        console.error("DB connection error:", err);
+        cached.promise = null;
+        throw err;
+      });
   }
 
   try {

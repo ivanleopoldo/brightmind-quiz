@@ -10,7 +10,7 @@ export const dbConnect = async () => {
   if (cached.conn) return cached.conn;
 
   try {
-    cached.conn = mongoose.createConnection(process.env.MONGODB_URI!, {
+    cached.conn = await mongoose.connect(process.env.MONGODB_URI!, {
       autoIndex: true,
     });
     mongoose.set("bufferCommands", false);

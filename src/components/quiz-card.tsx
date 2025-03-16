@@ -34,7 +34,7 @@ export default function QuizCard({
       className="h-72 flex-wrap overflow-hidden border-2 border-primary/20 pb-6 shadow-none"
     >
       <CardHeader className="relative h-3/5 w-full p-0">
-        <Image src={"https://picsum.photos/1000/600"} alt="photo" fill />
+        <Image src={"/bg-quiz.png"} alt="photo" fill />
       </CardHeader>
       <Separator className="mb-4 border border-primary/20 shadow-none" />
       <CardContent className="flex flex-row items-center justify-between">

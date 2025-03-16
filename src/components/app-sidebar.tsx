@@ -41,12 +41,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
+          title: "Published",
+          url: "/dashboard",
         },
         {
           title: "Settings",

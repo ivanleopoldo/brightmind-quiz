@@ -74,11 +74,11 @@ export default function QuizCard({
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation();
-                redirect(`/quiz-creator/${quizId}/results`);
+                redirect(`/quiz-creator/${quizId}`);
               }}
             >
               <ClipboardList />
-              See Results
+              Edit Quiz
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {

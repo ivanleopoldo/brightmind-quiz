@@ -5,6 +5,7 @@ const { Schema, model } = mongoose;
 const UserSchema = new Schema(
   {
     name: { type: String, immutable: true },
+    image: { type: String },
     emailVerified: { type: Boolean, immutable: true },
     email: { type: String, immutable: true },
   },

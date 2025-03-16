@@ -4,25 +4,22 @@ import mongoose from "mongoose";
 import dbConnect from "./db";
 
 let auth: ReturnType<typeof betterAuth>;
-let connectionPromise: Promise<typeof mongoose> | null = null;
 
-const waitForConnection = async (): Promise<typeof mongoose> => {
-  if (!connectionPromise) {
-    connectionPromise = dbConnect().then(async (conn) => {
-      // readyState 1 means connected
-      if ((conn.connection.readyState as number) !== 1) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        if ((conn.connection.readyState as number) !== 1) {
-          throw new Error("Database connection failed");
-        }
-      }
+const waitForConnection = async (maxAttempts = 5, delayMs = 1000): Promise<typeof mongoose> => {
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    const conn = await dbConnect();
+    if (conn.connection.readyState === 1 && conn.connection.db) {
       return conn;
-    }).catch((error) => {
-      connectionPromise = null;
-      throw error;
-    });
+    }
+    attempts++;
+    if (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
   }
-  return connectionPromise;
+  
+  throw new Error(`Database connection not ready after ${maxAttempts} attempts`);
 };
 
 const initAuth = async () => {
@@ -72,15 +69,11 @@ const initAuth = async () => {
   }
 };
 
-let authPromise: Promise<ReturnType<typeof betterAuth>> | null = null;
-
+export { initAuth };
 export const getAuth = async () => {
-  if (!authPromise) {
-    authPromise = initAuth().catch((error) => {
-      authPromise = null;
-      throw error;
-    });
+  if (!auth) {
+    return await initAuth();
   }
-  return authPromise;
+  return auth;
 };
 

@@ -60,20 +60,18 @@ function Results() {
   }
 
   return (
-    <div className="grid gap-2 p-8">
-      <div className="flex flex-row items-center justify-between rounded-md border p-4">
+    <div className="grid gap-2">
+      <div className="flex flex-col gap-4 rounded-md border p-4 lg:flex-row lg:items-center lg:justify-between">
         <p>{quizInfo?.title}</p>
         <Badge variant={"secondary"} className="p-2 text-sm text-foreground">
           {id}
         </Badge>
         <div className="flex flex-row gap-2">
-          <Button onClick={() => redirect(`/quiz-creator/${id}`)}>
-            Edit Quiz
-          </Button>
           {quiz?.start_status ? (
             <Button
               disabled={!isPublished}
               onClick={() => stopQuiz(id as string)}
+              className="w-full"
             >
               Stop Quiz
             </Button>
@@ -81,6 +79,7 @@ function Results() {
             <Button
               disabled={!isPublished}
               onClick={() => startQuiz(id as string)}
+              className="w-full"
             >
               Start Quiz
             </Button>

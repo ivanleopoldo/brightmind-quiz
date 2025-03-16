@@ -4,6 +4,7 @@ import AuthForm from "@/components/auth-form";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Login() {
   const login = async ({
@@ -19,9 +20,21 @@ export default function Login() {
         password,
       },
       {
+        onRequest: () => {
+          toast.info("Logging in...");
+        },
         onSuccess: () => {
           console.log("Logged in");
+          toast.success("Logged in");
           redirect("/dashboard");
+        },
+        onError: (error) => {
+          console.error("Login error:", error);
+          toast({
+            variant: "desctructive",
+            title: "Login Failed",
+            description: "Invalid Password or Email",
+          });
         },
       },
     );

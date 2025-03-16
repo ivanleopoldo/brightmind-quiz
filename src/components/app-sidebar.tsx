@@ -41,12 +41,12 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Published",
+          title: "Dashboard",
           url: "/dashboard",
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/settings",
         },
       ],
     },

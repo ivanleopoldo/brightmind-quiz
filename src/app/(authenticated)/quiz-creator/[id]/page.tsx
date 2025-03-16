@@ -20,6 +20,7 @@ import { Plus, Trash2, Settings, Home, Trophy } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Results from "@/components/results-table";
+import { toast } from "sonner";
 
 interface Question {
   quizId: string;
@@ -191,7 +192,7 @@ export default function Quiz() {
         orientation="vertical"
         className="h-[calc(100vh-6rem)] w-full"
       >
-        <div className="flex h-full flex-col-reverse pt-2 lg:flex-row">
+        <div className="flex h-full flex-col-reverse pt-2 md:flex-row lg:flex-row">
           <TabsList
             className={cn(
               isMobile
@@ -480,60 +481,72 @@ export default function Quiz() {
               value="settings"
               className="m-0 h-full border-none lg:p-6"
             >
-              <div className="mx-auto h-full w-full">
-                <div className="p-6">
-                  <div className="flex w-full flex-col gap-6">
+              <div className="mx-auto h-full w-full p-6">
+                <div className="flex w-full flex-col gap-6">
+                  <div className="flex w-full flex-col gap-4">
+                    <h2 className="text-2xl font-bold">Project Settings</h2>
                     <div className="flex w-full flex-col gap-4">
-                      <h2 className="text-2xl font-bold">Project Settings</h2>
-                      <div className="flex w-full flex-col gap-4">
-                        <p className="font-semibold">Join Code</p>
-                        <div
-                          className={cn(
-                            isPublished
-                              ? ""
-                              : "bg-foreground/20 text-muted-foreground",
-                            "flex w-full flex-col rounded-md border p-2",
-                          )}
-                        >
-                          <p>{id}</p>
-                        </div>
-                        <div className="flex w-full justify-center">
-                          <p className="font-extralight text-muted-foreground">
-                            OR
-                          </p>
-                        </div>
-                        <p className="font-semibold">Link</p>
-                        <div
-                          className={cn(
-                            isPublished
-                              ? ""
-                              : "bg-foreground/20 text-muted-foreground",
-                            "flex w-full flex-col overflow-hidden text-ellipsis rounded-md border p-2",
-                          )}
-                        >
-                          <p>https://brightmind-quiz.vercel.app/join/{id}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        {!isPublished ? (
-                          <Button
-                            className="w-full"
-                            onClick={() => {
-                              handleSave();
-                              publishQuiz(id);
-                            }}
-                          >
-                            Publish
-                          </Button>
-                        ) : (
-                          <Button
-                            className="w-full"
-                            onClick={() => unpublishQuiz(id)}
-                          >
-                            Unpublish
-                          </Button>
+                      <p className="font-semibold">Join Code</p>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          isPublished
+                            ? ""
+                            : "bg-foreground/20 text-muted-foreground",
+                          "flex w-full flex-col items-start justify-start rounded-md border bg-muted-foreground/10 p-2 text-left",
                         )}
+                        onClick={() => {
+                          window.navigator.clipboard.writeText(id);
+                          toast.success("Copied to clipboard!");
+                        }}
+                      >
+                        <p className="w-full truncate">{id}</p>
+                      </Button>
+                      <div className="flex w-full justify-center">
+                        <p className="font-extralight text-muted-foreground">
+                          OR
+                        </p>
                       </div>
+                      <p className="font-semibold">Link</p>
+                      <Button
+                        onClick={() => {
+                          window.navigator.clipboard.writeText(
+                            `https://brightmind-quiz.vercel.app/join/${id}`,
+                          );
+                          toast.success("Copied to clipboard!");
+                        }}
+                        variant="ghost"
+                        className={cn(
+                          isPublished
+                            ? ""
+                            : "bg-foreground/20 text-muted-foreground",
+                          "flex w-full flex-col items-start justify-start rounded-md border bg-muted-foreground/10 p-2 text-left",
+                        )}
+                      >
+                        <p className="w-full truncate">
+                          https://brightmind-quiz.vercel.app/join/{id}
+                        </p>
+                      </Button>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {!isPublished ? (
+                        <Button
+                          className="w-full"
+                          onClick={() => {
+                            handleSave();
+                            publishQuiz(id);
+                          }}
+                        >
+                          Publish
+                        </Button>
+                      ) : (
+                        <Button
+                          className="w-full"
+                          onClick={() => unpublishQuiz(id)}
+                        >
+                          Unpublish
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -542,8 +555,8 @@ export default function Quiz() {
             <TabsContent
               value="results"
               className={cn(
-                "m-0 border-none overflow-hidden",
-                isMobile ? "h-[calc(100vh-8rem)] pt-4" : "h-[calc(100vh-6rem)]"
+                "m-0 overflow-hidden border-none",
+                isMobile ? "h-[calc(100vh-8rem)] pt-4" : "h-[calc(100vh-6rem)]",
               )}
             >
               <div className="flex h-full w-full flex-col gap-4 overflow-y-auto p-4 lg:p-8">

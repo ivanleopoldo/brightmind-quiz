@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 export default function QuizPage() {
   const { id, userId } = useParams();
   const utils = api.useUtils();
-  const { data, isLoading } = api.quiz.getByQuizId.useQuery(id as string);
+  const { data, isLoading } = api.quiz.getByQuizId.useQuery(id as string, {staleTime: Infinity});
   const { data: status } = api.published.getById.useQuery(id as string, {
     refetchInterval: 2000,
   });
@@ -81,6 +81,7 @@ export default function QuizPage() {
 
   // Current question
   const questions = useMemo(() => data?.questions ?? [], [data]);
+  const length = questions.length;
   const currentQuestion = questions[currentQuestionIndex];
 
   // Timer countdown
@@ -105,6 +106,7 @@ export default function QuizPage() {
 
   // Handle timeout (no answer selected)
   const handleTimeout = useCallback(() => {
+    console.log(currentQuestionIndex);
     setIsAnswered(true);
     setFeedbackType("incorrect");
     setShowFeedback(true);
@@ -123,7 +125,7 @@ export default function QuizPage() {
     isAnswer: boolean,
   ) => {
     if (isAnswered) return;
-
+    2;
     setSelectedOption(index);
     setIsAnswered(true);
 
@@ -154,15 +156,20 @@ export default function QuizPage() {
 
   // Move to next question
   const moveToNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswered(false);
-      setTimeLeft(15);
+
+      // Get the next question's duration or default to 15 seconds
+      const nextQuestion = questions[currentQuestionIndex + 1];
+      setTimeLeft(nextQuestion?.duration || 15);
+
       setShowFeedback(false);
       setFeedbackType(null);
     } else {
       // Quiz finished
+      console.log(`${currentQuestionIndex}, ${questions.length}`)
       setQuizFinished(true);
       setShowFeedback(false);
       setFeedbackType(null);
@@ -187,7 +194,7 @@ export default function QuizPage() {
               <CardHeader className="border-b">
                 <div className="flex items-center justify-between">
                   <Badge variant="outline" className="px-3 py-1">
-                    Question {currentQuestionIndex + 1}/{questions.length}
+                    Question {currentQuestionIndex + 1}/{length}
                   </Badge>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
@@ -200,7 +207,7 @@ export default function QuizPage() {
                   </div>
                 </div>
                 <Progress
-                  value={(currentQuestionIndex / questions.length) * 100}
+                  value={(currentQuestionIndex / length) * 100}
                   className="mt-2"
                 />
               </CardHeader>
@@ -342,6 +349,7 @@ export default function QuizPage() {
           <CardContent className="pt-6">
             <div className="space-y-4">
               {participants
+                ?.slice(0, 10)
                 ?.sort((a, b) => b.score - a.score)
                 .map((player, index) => (
                   <div

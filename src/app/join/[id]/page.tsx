@@ -104,14 +104,14 @@ export default function Page() {
               <Button
                 className="h-14 w-full text-xl font-semibold"
                 onClick={async () => {
+                  if (loading) return; // Prevent multiple clicks if already loading
                   try {
                     setLoading(true);
                     if (id) {
                       const isParticipantExists = existingParticipants?.some(p => p.username === username);
                       if (isParticipantExists) {
                         toast.error("Participant already exists!");
-                        setLoading(false);
-                        return;
+                        return; // Don't proceed if the participant already exists
                       }
                       const user = await addParticipant({
                         quizId: id as string,
@@ -124,10 +124,10 @@ export default function Page() {
                     console.log(err);
                     toast.error("Something went wrong!");
                   } finally {
-                    setLoading(false);
+                    setLoading(false); // Reset loading state
                   }
                 }}
-                disabled={loading}
+                disabled={loading} // Disable button when loading
               >
                 {loading ? "Entering..." : "Enter Game"}
               </Button>

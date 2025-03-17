@@ -24,9 +24,9 @@ export default function Results() {
         </CardHeader>
         <CardContent className="">
           <div className="max-h-[calc(100vh-10rem)] overflow-y-auto">
-            {Array.from(new Set(participants.map(p => p._id.toString()))).map((id, index) => {
-              const player = participants.find(p => p._id.toString() === id);
-              return (
+            {participants
+              ?.sort((a, b) => b.score - a.score)
+              .map((player, index) => (
                 <div
                   key={player._id.toString()}
                   className={`flex items-center rounded-lg p-3 ${
@@ -59,8 +59,7 @@ export default function Results() {
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
           </div>
         </CardContent>
       </Card>

@@ -17,48 +17,51 @@ export default function Results() {
     return <div>Loading...</div>;
   }
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <Card className="p-4">
+    <div className="overflow-y-auto- flex h-screen w-full items-center justify-center p-8">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Results</CardTitle>
         </CardHeader>
-        <CardContent>
-          {participants
-            ?.sort((a, b) => b.score - a.score)
-            .map((player, index) => (
-              <div
-                key={player._id.toString()}
-                className={`flex items-center rounded-lg p-3 ${
-                  player._id.toString() === userId
-                    ? "bg-primary/10 ring-1 ring-primary"
-                    : ""
-                }`}
-              >
-                <div className="flex flex-1 items-center gap-3">
-                  <div className="w-6 text-center font-bold">{index + 1}</div>
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={player.avatar ?? ""}
-                      alt={player.username}
-                    />
-                    <AvatarFallback>
-                      {player.username.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex w-full flex-row justify-between">
-                    <div className="flex items-center gap-12 font-medium">
-                      {player.username}
-                      {player._id.toString() === userId && (
-                        <Badge className="ml-1 text-xs">You</Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center font-medium">
-                      {player.score} pts.
+        <CardContent className="">
+          <div className="max-h-[calc(100vh-10rem)] overflow-y-auto">
+            {Array.from(new Set(participants.map(p => p._id.toString()))).map((id, index) => {
+              const player = participants.find(p => p._id.toString() === id);
+              return (
+                <div
+                  key={player._id.toString()}
+                  className={`flex items-center rounded-lg p-3 ${
+                    player._id.toString() === userId
+                      ? "bg-primary/10 ring-1 ring-primary"
+                      : ""
+                  }`}
+                >
+                  <div className="flex flex-1 items-center gap-3">
+                    <div className="w-6 text-center font-bold">{index + 1}</div>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={player.avatar ?? ""}
+                        alt={player.username}
+                      />
+                      <AvatarFallback>
+                        {player.username.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex w-full flex-row justify-between">
+                      <div className="flex items-center gap-12 font-medium">
+                        {player.username}
+                        {player._id.toString() === userId && (
+                          <Badge className="ml-1 text-xs">You</Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center font-medium">
+                        {player.score} pts.
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>

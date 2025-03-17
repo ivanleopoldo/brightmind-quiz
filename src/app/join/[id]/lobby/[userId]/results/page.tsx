@@ -17,7 +17,7 @@ export default function Results() {
     return <div>Loading...</div>;
   }
   return (
-    <div className="overflow-y-auto- flex h-screen w-full items-center justify-center p-8">
+    <div className="flex h-screen w-full items-center justify-center p-8">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Results</CardTitle>

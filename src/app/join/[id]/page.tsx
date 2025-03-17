@@ -30,7 +30,8 @@ export default function Page() {
     api.published.addParticipant.useMutation();
   const router = useRouter();
 
-  const { data: existingParticipants } = api.published.getAllParticipants.useQuery(id as string);
+  const { data: existingParticipants } =
+    api.published.getAllParticipants.useQuery(id as string);
 
   // Function to randomize avatar
   const randomizeAvatar = () => {
@@ -108,7 +109,9 @@ export default function Page() {
                   try {
                     setLoading(true);
                     if (id) {
-                      const isParticipantExists = existingParticipants?.some(p => p.username === username);
+                      const isParticipantExists = existingParticipants?.some(
+                        (p) => p.username === username,
+                      );
                       if (isParticipantExists) {
                         toast.error("Participant already exists!");
                         return; // Don't proceed if the participant already exists
@@ -123,8 +126,6 @@ export default function Page() {
                   } catch (err) {
                     console.log(err);
                     toast.error("Something went wrong!");
-                  } finally {
-                    setLoading(false); // Reset loading state
                   }
                 }}
                 disabled={loading} // Disable button when loading

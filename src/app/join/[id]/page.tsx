@@ -16,6 +16,7 @@ export default function Page() {
   const [avatarSeed, setAvatarSeed] = useState(() =>
     Math.random().toString(36).substring(7),
   );
+  const [loading, setLoading] = useState(false);
 
   if (id) {
     const { data, error } = api.published.getById.useQuery(id as string);
@@ -28,6 +29,8 @@ export default function Page() {
   const { mutateAsync: addParticipant } =
     api.published.addParticipant.useMutation();
   const router = useRouter();
+
+  const { data: existingParticipants } = api.published.getAllParticipants.useQuery(id as string);
 
   // Function to randomize avatar
   const randomizeAvatar = () => {
@@ -102,7 +105,14 @@ export default function Page() {
                 className="h-14 w-full text-xl font-semibold"
                 onClick={async () => {
                   try {
+                    setLoading(true);
                     if (id) {
+                      const isParticipantExists = existingParticipants?.some(p => p.username === username);
+                      if (isParticipantExists) {
+                        toast.error("Participant already exists!");
+                        setLoading(false);
+                        return;
+                      }
                       const user = await addParticipant({
                         quizId: id as string,
                         username: username,
@@ -113,10 +123,13 @@ export default function Page() {
                   } catch (err) {
                     console.log(err);
                     toast.error("Something went wrong!");
+                  } finally {
+                    setLoading(false);
                   }
                 }}
+                disabled={loading}
               >
-                Enter Game
+                {loading ? "Entering..." : "Enter Game"}
               </Button>
             </div>
           </CardContent>
